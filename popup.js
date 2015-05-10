@@ -2,10 +2,14 @@ function renderStatus(statusText) {
   document.getElementById('status').textContent = statusText;
 }
 
+function hello() {
+
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+  var vid = document.getElementById('videoel');
 
   // *** this code is for video recording ***
-  var vid = document.getElementById('videoel');
 
   // check for camerasupport
   if (navigator.webkitGetUserMedia) {

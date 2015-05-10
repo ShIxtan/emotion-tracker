@@ -25,11 +25,11 @@ function getVid(successCallback){
   // check for camerasupport
   if (navigator.webkitGetUserMedia) {
     // set up stream
-
+    var vid = document.getElementById('videoel');
     var videoSelector = {video : true};
 
     navigator.webkitGetUserMedia(videoSelector, function( stream ) {
-      var vid = document.getElementById('videoel');
+
       vid.src = (window.URL && window.URL.createObjectURL(stream)) || stream;
       vid.onloadedmetadata = function() {
         vid.play();
@@ -42,6 +42,8 @@ function getVid(successCallback){
   } else {
     alert("This extension depends on getUserMedia, which your browser does not seem to support. :(");
   }
+
+  return vid;
 }
 
 function saveEmotions(emotions){
@@ -61,31 +63,32 @@ function startTracking(vid) {
   classifier.init(emotionModel);
 
   ctrack.start(vid);
-  setInterval(function(){
-    trackLoop(ctrack, classifier);
-  }, 500);
+  trackLoop(ctrack, classifier)
 }
 
 function trackLoop(ctrack, classifier) {
+  setTimeout(function(){
+    trackLoop(ctrack, classifier);
+  }, 500);
   var currentParams = ctrack.getCurrentParameters();
   var emotions = classifier.meanPredict(currentParams);
 
   if (emotions) {
-    var max = 0.5;
-    var emotion = "bored";
+    var max = 0.4;
     for (i in emotions){
       if (emotions[i].value > max){
         max = emotions[i].value;
-        emotion = emotions[i].emotion
+        var emotion = emotions[i].emotion
       }
     }
-
-    chrome.browserAction.setIcon({path:"img/" + emotion + ".png"});
+    if (emotion){
+      chrome.browserAction.setIcon({path:"img/" + emotion + ".png"});
+    }
 
     saveEmotions(emotions);
   }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  getVid(startTracking);
+  var vid = getVid(startTracking);
 });
