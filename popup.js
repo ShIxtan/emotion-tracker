@@ -1,38 +1,11 @@
-/**
- * Get the current tab.
- *
- * @param {function(tab)} callback - called when the current tab is found.
- **/
-function getCurrentTab(callback) {
-  var queryInfo = {
-    active: true,
-    currentWindow: true
-  };
-
-  chrome.tabs.query(queryInfo, function(tabs) {
-    var tab = tabs[0];
-
-    var url = tab.url;
-
-    console.assert(typeof url == 'string', 'tab.url should be a string');
-
-    callback(tab);
-  });
-}
-
 function renderStatus(statusText) {
   document.getElementById('status').textContent = statusText;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  getCurrentTab(function(tab) {
-    renderStatus('currently on: ' + tab.title);
-  });
 
   // *** this code is for video recording ***
   var vid = document.getElementById('videoel');
-  var overlay = document.getElementById('overlay');
-	var overlayCC = overlay.getContext('2d');
 
   // check for camerasupport
   if (navigator.webkitGetUserMedia) {
@@ -54,13 +27,13 @@ document.addEventListener('DOMContentLoaded', function() {
   /*********** setup of emotion detection *************/
 
   var ctrack = new clm.tracker({useWebGL : true});
-
   ctrack.init(pModel);
   var ec = new emotionClassifier();
   ec.init(emotionModel);
-  var emotionData = ec.getBlank();
+  var overlay = document.getElementById('overlay');
+  var overlayCC = overlay.getContext('2d');
 
-  function startTracking() {
+  function startDrawing() {
     vid.play();
     ctrack.start(vid);
     loop = setInterval(drawLoop.bind(this), 500);
@@ -82,7 +55,8 @@ document.addEventListener('DOMContentLoaded', function() {
         str += ("  ---   " + er[i].emotion + ": " + Math.floor(er[i].value * 100));
       }
       renderStatus(str);
+    }
   }
 
-  startTracking();
+  startDrawing();
 });

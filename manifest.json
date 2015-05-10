@@ -6,12 +6,12 @@
   "version": "0.1",
 
   "browser_action": {
-    "default_icon": "icon.png",
+    "default_icon": "img/bored.png",
     "default_popup": "popup.html"
   },
 
   "options_ui": {
-    "page": "options.html",
+    "page": "background.html",
     "chrome_style": true,
     "open_in_tab": true
   },

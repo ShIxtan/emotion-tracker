@@ -11,19 +11,17 @@ function getCurrentTab(callback) {
 
   chrome.tabs.query(queryInfo, function(tabs) {
     var tab = tabs[0];
+    if (tab) {
+      var url = tab.url;
 
-    var url = tab.url;
+      console.assert(typeof url == 'string', 'tab.url should be a string');
 
-    console.assert(typeof url == 'string', 'tab.url should be a string');
-
-    callback(tab);
+      callback(tab);
+    }
   });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  // *** this code is for video recording ***
-  var vid = document.getElementById('videoel');
-
+function getVid(successCallback){
   // check for camerasupport
   if (navigator.webkitGetUserMedia) {
     // set up stream
@@ -31,8 +29,12 @@ document.addEventListener('DOMContentLoaded', function() {
     var videoSelector = {video : true};
 
     navigator.webkitGetUserMedia(videoSelector, function( stream ) {
+      var vid = document.getElementById('videoel');
       vid.src = (window.URL && window.URL.createObjectURL(stream)) || stream;
-      vid.play();
+      vid.onloadedmetadata = function() {
+        vid.play();
+        successCallback(vid);
+      };
     }, function() {
       chrome.runtime.openOptionsPage();
       alert("There was some problem trying to fetch video from your webcam. If you have a webcam, please make sure to accept when the browser asks for access to your webcam.");
@@ -40,39 +42,50 @@ document.addEventListener('DOMContentLoaded', function() {
   } else {
     alert("This extension depends on getUserMedia, which your browser does not seem to support. :(");
   }
+}
 
-  /*********** setup of emotion detection *************/
+function saveEmotions(emotions){
+  getCurrentTab(function(tab){
+    emotions.tabTitle = tab.title;
+    emotions.tabUrl = tab.url;
+    var params = {};
+    params[Date.now()] = emotions;
+    chrome.storage.local.set(params);
+  });
+}
 
+function startTracking(vid) {
   var ctrack = new clm.tracker({useWebGL : true});
-
   ctrack.init(pModel);
-  var ec = new emotionClassifier();
-  ec.init(emotionModel);
-  var emotionData = ec.getBlank();
+  var classifier = new emotionClassifier();
+  classifier.init(emotionModel);
 
-  function startTracking() {
-    vid.play();
-    ctrack.start(vid);
-    loop = setInterval(trackLoop.bind(this), 500);
+  ctrack.start(vid);
+  setInterval(function(){
+    trackLoop(ctrack, classifier);
+  }, 500);
+}
 
-    return loop;
-  }
+function trackLoop(ctrack, classifier) {
+  var currentParams = ctrack.getCurrentParameters();
+  var emotions = classifier.meanPredict(currentParams);
 
-  function drawLoop() {
-    var cp = ctrack.getCurrentParameters();
-
-    var er = ec.meanPredict(cp);
-    if (er) {
-      getCurrentTab(function(tab){
-        er.tabTitle = tab.title;
-        er.tabUrl = tab.url;
-        var time = Date.now()
-        params = {};
-        params[time] = er;
-        chrome.storage.local.set(params);
-      });
+  if (emotions) {
+    var max = 0.5;
+    var emotion = "bored";
+    for (i in emotions){
+      if (emotions[i].value > max){
+        max = emotions[i].value;
+        emotion = emotions[i].emotion
+      }
     }
-  }
 
-  startTracking();
+    chrome.browserAction.setIcon({path:"img/" + emotion + ".png"});
+
+    saveEmotions(emotions);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  getVid(startTracking);
 });
