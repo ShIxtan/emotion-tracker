@@ -29,7 +29,23 @@ function openDB(){
   };
   request.onsuccess = function(event) {
     var db = window.db = event.target.result;
-    //saveLocal(db);
+
+    db.onerror = function(event) {
+      // Generic error handler for all errors targeted at this database's
+      // requests!
+      console.log("Database error: " + event.target.errorCode);
+    };
+  };
+  request.onupgradeneeded = function(event) {
+    var db = event.target.result;
+
+    // Create an objectStore for this database
+    var objectStore = db.createObjectStore("emotions", { keyPath: "timestamp" });
+    objectStore.createIndex("tabUrl", "tabUrl", { unique: false });
+    objectStore.createIndex("tabTitle", "tabTitle", { unique: false });
+    objectStore.transaction.oncomplete = function(event) {
+      // need to save stored localData
+    }
   };
 }
 
@@ -62,9 +78,28 @@ function saveEmotions(emotions){
   getCurrentTab(function(tab){
     emotions.tabTitle = tab.title;
     emotions.tabUrl = tab.url;
-    var params = {};
-    params[Date.now()] = emotions;
-    chrome.storage.local.set(params);
+    emotions.timestamp = Date.now();
+    if (db){
+      var transaction = db.transaction(["emotions"], "readwrite");
+      // Do something when all the data is added to the database.
+      transaction.oncomplete = function(event) {
+      };
+
+      transaction.onerror = function(event) {
+        console.log("failed to save emotion data")
+        console.log(event);
+      };
+
+      var objectStore = transaction.objectStore("emotions");
+      var request = objectStore.add(emotions);
+      request.onsuccess = function(event) {
+        // event.target.result == customerData[i].ssn;
+      };
+    } else {
+      var params = {};
+      params[Date.now()] = emotions;
+      chrome.storage.local.set(params);
+    }
   });
 }
 
