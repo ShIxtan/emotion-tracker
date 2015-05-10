@@ -43,10 +43,15 @@ function drawLoop(overlayCC, background) {
   }
 }
 
+function openData(){
+  chrome.tabs.create({'url': chrome.extension.getURL('data.html')}, function(tab) {
+    // Tab opened.
+  });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   var background = chrome.extension.getBackgroundPage()
-
   var vid = getVid(background.vid.src);
-
   startDrawing(vid, background);
+  document.getElementById('data').addEventListener("click", openData);
 });
