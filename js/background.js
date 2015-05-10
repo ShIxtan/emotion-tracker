@@ -70,14 +70,8 @@ function saveEmotions(emotions){
     data.tabTitle = tab.title;
     data.tabUrl = tab.url;
     data.timestamp = Date.now();
-    
-    if (db){
-      db.emotions.put(data)
-    } else {
-      var params = {};
-      params[Date.now()] = data;
-      chrome.storage.local.set(params);
-    }
+
+    db.emotions.put(data)
   });
 }
 
