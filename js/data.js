@@ -7,7 +7,7 @@ var emoColors = {
   'surprised': 'pink'
 }
 
-function graphData(data, oneHourAgo){
+function graphData(data, tenMinAgo){
   var vis = d3.select("#visualisation"),
     WIDTH = 1000,
     HEIGHT = 500,
@@ -17,7 +17,7 @@ function graphData(data, oneHourAgo){
         bottom: 20,
         left: 50
     },
-    xScale = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([0, (3600)]),
+    xScale = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([0, 600]),
     yScale = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain([0,1]),
     xAxis = d3.svg.axis().scale(xScale),
     yAxis = d3.svg.axis().scale(yScale).orient("left");
@@ -27,7 +27,7 @@ function graphData(data, oneHourAgo){
     for (emotion in emoColors){
       var lineGen = d3.svg.line()
         .x(function(d) {
-          return xScale((d.timestamp - oneHourAgo)/1000);
+          return xScale((d.timestamp - tenMinAgo)/1000);
         })
         .y(function(d) {
           return yScale(d[emotion]);
@@ -42,12 +42,30 @@ function graphData(data, oneHourAgo){
     }
 }
 
+function showEvents(events){
+  var ul = document.getElementById("events");
+  for (i in events){
+    var e = events[i]
+    var li = document.createElement("li");
+    var a = document.createElement('a');
+    var linkText = document.createTextNode(e.tabTitle);
+    a.appendChild(linkText);
+    a.title = e.tabTitle;
+    a.href = e.tabUrl;
+    li.appendChild(document.createTextNode(e.event + " : "));
+    li.appendChild(a);
+    ul.appendChild(li);
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-  var oneHourAgo = Date.now() - (1000 * 60 * 60)
+  var tenMinAgo = Date.now() - (1000 * 60 * 10);
   var db = chrome.extension.getBackgroundPage().db;
-  db.emotions.where('timestamp').above(oneHourAgo).toArray().then(function(data){
-    graphData(data, oneHourAgo);
-  }).catch(function(){
-    console.log("error");
-  });
+  db.events.toArray().then(function(events){
+    debugger;
+    showEvents(events);
+  })
+  db.emotions.where('timestamp').above(tenMinAgo).toArray().then(function(data){
+    graphData(data, tenMinAgo);
+  })
 });

@@ -22,9 +22,13 @@ function getCurrentTab(callback) {
 }
 
 function openDB(){
-  var db = new Dexie("emotions-database");
+  var db = new Dexie("database");
   db.version(1).stores({
     emotions: "timestamp,tabUrl,tabTitle"
+  })
+  db.version(2).stores({
+    emotions: "timestamp,tabUrl,tabTitle",
+    events: "timestamp,tabUrl,tabTitle,event"
   })
 
   db.open();
@@ -61,6 +65,19 @@ function getVid(successCallback){
   return vid;
 }
 
+function saveEvent(emotion){
+  getCurrentTab(function(tab){
+    var data = {
+      'tabTitle': tab.title,
+      'tabUrl': tab.url,
+      'timestamp': Date.now(),
+      'event': emotion
+    };
+
+    db.events.put(data);
+  });
+}
+
 function saveEmotions(emotions){
   getCurrentTab(function(tab){
     var data = {};
@@ -88,23 +105,22 @@ function startTracking(vid) {
 function trackLoop(ctrack, classifier) {
   setTimeout(function(){
     trackLoop(ctrack, classifier);
-  }, 500);
+  }, 100);
   var currentParams = ctrack.getCurrentParameters();
   var emotions = classifier.meanPredict(currentParams);
 
   if (emotions) {
-    var max = 0.4;
+    var max = 0.8;
     emotion = "bored";
     for (i in emotions){
       if (emotions[i].value > max){
         max = emotions[i].value;
         var emotion = emotions[i].emotion
+        saveEvent(emotion);
       }
     }
-    if (emotion){
-      chrome.browserAction.setIcon({path:"img/" + emotion + ".png"});
-    }
-
+    
+    chrome.browserAction.setIcon({path:"img/" + emotion + ".png"});
     saveEmotions(emotions);
   }
 }
