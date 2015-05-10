@@ -20,19 +20,9 @@ function getCurrentTab(callback) {
   });
 }
 
-function renderStatus(statusText) {
-  document.getElementById('status').textContent = statusText;
-}
-
 document.addEventListener('DOMContentLoaded', function() {
-  getCurrentTab(function(tab) {
-    renderStatus('currently on: ' + tab.title);
-  });
-
   // *** this code is for video recording ***
   var vid = document.getElementById('videoel');
-  var overlay = document.getElementById('overlay');
-	var overlayCC = overlay.getContext('2d');
 
   // check for camerasupport
   if (navigator.webkitGetUserMedia) {
@@ -63,25 +53,25 @@ document.addEventListener('DOMContentLoaded', function() {
   function startTracking() {
     vid.play();
     ctrack.start(vid);
-    loop = setInterval(drawLoop.bind(this), 500);
+    loop = setInterval(trackLoop.bind(this), 500);
 
     return loop;
   }
 
   function drawLoop() {
-    overlayCC.clearRect(0, 0, 400, 300);
-    if (ctrack.getCurrentPosition()) {
-      ctrack.draw(overlay);
-    }
     var cp = ctrack.getCurrentParameters();
 
     var er = ec.meanPredict(cp);
     if (er) {
-      str = "";
-      for (i in er){
-        str += ("  ---   " + er[i].emotion + ": " + Math.floor(er[i].value * 100));
-      }
-      renderStatus(str);
+      getCurrentTab(function(tab){
+        er.tabTitle = tab.title;
+        er.tabUrl = tab.url;
+        var time = Date.now()
+        params = {};
+        params[time] = er;
+        chrome.storage.local.set(params);
+      });
+    }
   }
 
   startTracking();
