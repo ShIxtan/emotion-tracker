@@ -2,65 +2,51 @@ function renderStatus(statusText) {
   document.getElementById('status').textContent = statusText;
 }
 
-function hello() {
+function getVid(src){
+  var vid = document.getElementById('videoel');
+  vid.src = src;
 
+  return vid;
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  var vid = document.getElementById('videoel');
-
-  // *** this code is for video recording ***
-
-  // check for camerasupport
-  if (navigator.webkitGetUserMedia) {
-    // set up stream
-
-    var videoSelector = {video : true};
-
-    navigator.webkitGetUserMedia(videoSelector, function( stream ) {
-      vid.src = (window.URL && window.URL.createObjectURL(stream)) || stream;
-      vid.play();
-    }, function() {
-      chrome.runtime.openOptionsPage();
-      alert("There was some problem trying to fetch video from your webcam. If you have a webcam, please make sure to accept when the browser asks for access to your webcam.");
-    });
-  } else {
-    alert("This extension depends on getUserMedia, which your browser does not seem to support. :(");
-  }
-
-  /*********** setup of emotion detection *************/
-
-  var ctrack = new clm.tracker({useWebGL : true});
-  ctrack.init(pModel);
-  var ec = new emotionClassifier();
-  ec.init(emotionModel);
+function startDrawing(vid, background) {
   var overlay = document.getElementById('overlay');
   var overlayCC = overlay.getContext('2d');
 
-  function startDrawing() {
-    vid.play();
-    ctrack.start(vid);
-    loop = setInterval(drawLoop.bind(this), 500);
+  vid.play();
 
-    return loop;
+  loop = setInterval(function(){
+    drawLoop(overlayCC, background);
+  }, 500);
+
+  return loop;
+}
+
+function drawLoop(overlayCC, background) {
+  var ctrack = background.ctrack;
+  overlayCC.clearRect(0, 0, 400, 300);
+  if (ctrack.getCurrentPosition()) {
+    ctrack.draw(overlay);
   }
 
-  function drawLoop() {
-    overlayCC.clearRect(0, 0, 400, 300);
-    if (ctrack.getCurrentPosition()) {
-      ctrack.draw(overlay);
-    }
-    var cp = ctrack.getCurrentParameters();
+  var currentParams = ctrack.getCurrentParameters();
+  var emotions = background.classifier.meanPredict(currentParams);
 
-    var er = ec.meanPredict(cp);
-    if (er) {
-      str = "";
-      for (i in er){
-        str += ("  ---   " + er[i].emotion + ": " + Math.floor(er[i].value * 100));
+  if (emotions) {
+    str = "";
+    for (i in emotions){
+      if (emotions[i].emotion){
+        str += ("  ---   " + emotions[i].emotion + ": " + Math.floor(emotions[i].value * 100));
       }
-      renderStatus(str);
     }
+    renderStatus(str);
   }
+}
 
-  startDrawing();
+document.addEventListener('DOMContentLoaded', function() {
+  var background = chrome.extension.getBackgroundPage()
+
+  var vid = getVid(background.vid.src);
+
+  startDrawing(vid, background);
 });

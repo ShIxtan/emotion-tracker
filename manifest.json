@@ -11,7 +11,7 @@
   },
 
   "options_ui": {
-    "page": "background.html",
+    "page": "popup.html",
     "chrome_style": true,
     "open_in_tab": true
   },

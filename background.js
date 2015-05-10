@@ -57,9 +57,9 @@ function saveEmotions(emotions){
 }
 
 function startTracking(vid) {
-  var ctrack = new clm.tracker({useWebGL : true});
+  ctrack = window.ctrack = new clm.tracker({useWebGL : true});
   ctrack.init(pModel);
-  var classifier = new emotionClassifier();
+  var classifier = window.classifier = new emotionClassifier();
   classifier.init(emotionModel);
 
   ctrack.start(vid);
@@ -75,6 +75,7 @@ function trackLoop(ctrack, classifier) {
 
   if (emotions) {
     var max = 0.4;
+    emotion = "bored";
     for (i in emotions){
       if (emotions[i].value > max){
         max = emotions[i].value;
@@ -90,5 +91,5 @@ function trackLoop(ctrack, classifier) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  var vid = getVid(startTracking);
+  window.vid = getVid(startTracking);
 });
