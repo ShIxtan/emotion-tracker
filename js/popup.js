@@ -41,6 +41,10 @@ function drawLoop(overlayCC, background) {
     }
     renderStatus(str);
   }
+
+  chrome.storage.local.getBytesInUse(null, function(bytes){
+    console.log(bytes);
+  });
 }
 
 document.addEventListener('DOMContentLoaded', function() {

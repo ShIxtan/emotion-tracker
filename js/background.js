@@ -21,6 +21,18 @@ function getCurrentTab(callback) {
   });
 }
 
+function openDB(){
+  var request = indexedDB.open("MyTestDatabase");
+  request.onerror = function(event) {
+    chrome.runtime.openOptionsPage();
+    alert("In order to store your data, this extension needs permission to use IndexedDB");
+  };
+  request.onsuccess = function(event) {
+    var db = window.db = event.target.result;
+    //saveLocal(db);
+  };
+}
+
 function getVid(successCallback){
   // check for camerasupport
   if (navigator.webkitGetUserMedia) {
@@ -91,5 +103,6 @@ function trackLoop(ctrack, classifier) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  openDB();
   window.vid = getVid(startTracking);
 });
