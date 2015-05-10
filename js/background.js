@@ -63,14 +63,19 @@ function getVid(successCallback){
 
 function saveEmotions(emotions){
   getCurrentTab(function(tab){
-    emotions.tabTitle = tab.title;
-    emotions.tabUrl = tab.url;
-    emotions.timestamp = Date.now();
+    var data = {};
+    for (i in emotions){
+      data[emotions[i].emotion] = emotions[i].value;
+    }
+    data.tabTitle = tab.title;
+    data.tabUrl = tab.url;
+    data.timestamp = Date.now();
+    
     if (db){
-      db.emotions.put(emotions)
+      db.emotions.put(data)
     } else {
       var params = {};
-      params[Date.now()] = emotions;
+      params[Date.now()] = data;
       chrome.storage.local.set(params);
     }
   });

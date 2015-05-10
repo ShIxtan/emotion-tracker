@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-  var background = chrome.extension.getBackgroundPage()
+  var db = chrome.extension.getBackgroundPage().db;
+  data = db.emotions.toArray();
   debugger;
 });
