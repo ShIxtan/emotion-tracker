@@ -7,7 +7,7 @@ var emoColors = {
   'surprised': 'pink'
 }
 
-function graphData(data, oneMinuteAgo){
+function graphData(data, oneHourAgo){
   var vis = d3.select("#visualisation"),
     WIDTH = 1000,
     HEIGHT = 500,
@@ -17,7 +17,7 @@ function graphData(data, oneMinuteAgo){
         bottom: 20,
         left: 50
     },
-    xScale = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([0, 60]),
+    xScale = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([0, (3600)]),
     yScale = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain([0,1]),
     xAxis = d3.svg.axis().scale(xScale),
     yAxis = d3.svg.axis().scale(yScale).orient("left");
@@ -27,7 +27,7 @@ function graphData(data, oneMinuteAgo){
     for (emotion in emoColors){
       var lineGen = d3.svg.line()
         .x(function(d) {
-          return xScale((d.timestamp - oneMinuteAgo)/1000);
+          return xScale((d.timestamp - oneHourAgo)/1000);
         })
         .y(function(d) {
           return yScale(d[emotion]);
@@ -43,10 +43,10 @@ function graphData(data, oneMinuteAgo){
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  var oneMinuteAgo = Date.now() - (1000 * 60)
+  var oneHourAgo = Date.now() - (1000 * 60 * 60)
   var db = chrome.extension.getBackgroundPage().db;
-  db.emotions.where('timestamp').above(oneMinuteAgo).toArray().then(function(data){
-    graphData(data, oneMinuteAgo);
+  db.emotions.where('timestamp').above(oneHourAgo).toArray().then(function(data){
+    graphData(data, oneHourAgo);
   }).catch(function(){
     console.log("error");
   });
