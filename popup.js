@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function startTracking() {
     vid.play();
     ctrack.start(vid);
-    loop = setInterval(drawLoop.bind(this), 100);
+    loop = setInterval(drawLoop.bind(this), 500);
 
     return loop;
   }
@@ -77,12 +77,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var er = ec.meanPredict(cp);
     if (er) {
+      str = "";
       for (i in er){
-        if (er[i].value > 0.5){
-          console.log(er[i].emotion + ": " + er[i].value)
-        }
+        str += ("  ---   " + er[i].emotion + ": " + Math.floor(er[i].value * 100));
       }
+      renderStatus(str);
+
+      getCurrentTab(function(tab){
+        er.tabTitle = tab.title;
+        er.tabUrl = tab.url;
+        var time = Date.now()
+        params = {};
+        params[time] = er;
+        chrome.storage.local.set(params);
+      });
     }
+
+    chrome.storage.local.getBytesInUse(null, function(bytes){
+      console.log(bytes);
+    })
+
   }
 
   startTracking();
