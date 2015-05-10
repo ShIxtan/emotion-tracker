@@ -32,6 +32,8 @@ function openDB(){
   Dexie.Promise.on('error', function(err) {
     console.log("Uncaught error: " + err);
   });
+
+  return db;
 }
 
 function getVid(successCallback){
