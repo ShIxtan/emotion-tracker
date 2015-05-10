@@ -105,7 +105,7 @@ function startTracking(vid) {
 function trackLoop(ctrack, classifier) {
   setTimeout(function(){
     trackLoop(ctrack, classifier);
-  }, 100);
+  }, 500);
   var currentParams = ctrack.getCurrentParameters();
   var emotions = classifier.meanPredict(currentParams);
 
@@ -119,7 +119,7 @@ function trackLoop(ctrack, classifier) {
         saveEvent(emotion);
       }
     }
-    
+
     chrome.browserAction.setIcon({path:"img/" + emotion + ".png"});
     saveEmotions(emotions);
   }

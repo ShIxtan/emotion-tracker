@@ -7,7 +7,7 @@ var emoColors = {
   'surprised': 'pink'
 }
 
-function graphData(data, tenMinAgo){
+function graphData(data, oneMinAgo){
   var vis = d3.select("#visualisation"),
     WIDTH = 1000,
     HEIGHT = 500,
@@ -17,7 +17,7 @@ function graphData(data, tenMinAgo){
         bottom: 20,
         left: 50
     },
-    xScale = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([0, 600]),
+    xScale = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([0, 60]),
     yScale = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain([0,1]),
     xAxis = d3.svg.axis().scale(xScale),
     yAxis = d3.svg.axis().scale(yScale).orient("left");
@@ -27,7 +27,7 @@ function graphData(data, tenMinAgo){
     for (emotion in emoColors){
       var lineGen = d3.svg.line()
         .x(function(d) {
-          return xScale((d.timestamp - tenMinAgo)/1000);
+          return xScale((d.timestamp - oneMinAgo)/1000);
         })
         .y(function(d) {
           return yScale(d[emotion]);
@@ -52,20 +52,54 @@ function showEvents(events){
     a.appendChild(linkText);
     a.title = e.tabTitle;
     a.href = e.tabUrl;
-    li.appendChild(document.createTextNode(e.event + " : "));
+    li.appendChild(document.createTextNode(timeDifference(Date.now(), e.timestamp) + " - " + e.event + " : "));
     li.appendChild(a);
     ul.appendChild(li);
   }
 }
 
+function timeDifference(current, previous) {
+  var msPerMinute = 60 * 1000;
+  var msPerHour = msPerMinute * 60;
+  var msPerDay = msPerHour * 24;
+  var msPerMonth = msPerDay * 30;
+  var msPerYear = msPerDay * 365;
+
+  var elapsed = current - previous;
+
+  if (elapsed < msPerMinute) {
+       return Math.round(elapsed/1000) + ' seconds ago';
+  }
+
+  else if (elapsed < msPerHour) {
+       return Math.round(elapsed/msPerMinute) + ' minutes ago';
+  }
+
+  else if (elapsed < msPerDay ) {
+       return Math.round(elapsed/msPerHour ) + ' hours ago';
+  }
+
+  else if (elapsed < msPerMonth) {
+      return 'approximately ' + Math.round(elapsed/msPerDay) + ' days ago';
+  }
+
+  else if (elapsed < msPerYear) {
+      return 'approximately ' + Math.round(elapsed/msPerMonth) + ' months ago';
+  }
+
+  else {
+      return 'approximately ' + Math.round(elapsed/msPerYear ) + ' years ago';
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-  var tenMinAgo = Date.now() - (1000 * 60 * 10);
+  var oneMinAgo = Date.now() - (1000 * 60);
+  var tenMinAgo = Date.now() - (1000 * 60 * 60);
   var db = chrome.extension.getBackgroundPage().db;
-  db.events.toArray().then(function(events){
-    debugger;
+  db.events.where('timestamp').above(oneMinAgo).toArray().then(function(events){
     showEvents(events);
   })
-  db.emotions.where('timestamp').above(tenMinAgo).toArray().then(function(data){
-    graphData(data, tenMinAgo);
+  db.emotions.where('timestamp').above(oneMinAgo).toArray().then(function(data){
+    graphData(data, oneMinAgo);
   })
 });
