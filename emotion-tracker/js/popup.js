@@ -1,7 +1,9 @@
 function getVid(src){
   var vid = document.getElementById('videoel');
-  vid.src = src;
 
+  navigator.webkitGetUserMedia({video : true}, function() {}, function() {});
+
+  vid.src = src;
   return vid;
 }
 
