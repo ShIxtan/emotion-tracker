@@ -1,6 +1,8 @@
 # emotion-tracker
 
-Chrome extension for tracking emotions from the webcam. Uses [clmtrackr][1] to detect facial expressions, and records what tab you are at when emotions peak. Currently also stores second-by-second emotional data, but can't display much due to performance
+Chrome extension for tracking emotions from the webcam. Uses [clmtrackr][1] to detect facial expressions, and records what tab you are at when emotions peak. Currently also stores second-by-second emotional data, but can't display much due to performance.
+
+Saves bookmarks to "Other Bookmarks/Emotion Bookmarks" (this is a bit buggy still); 
 
 Adds a color-coded icon to let you know which emotion it's picking up, click on it to see more details. (the extension should automatically redirect you to the options page to allow the camera. If not, go to chrome://extensions/ and click on "options")
 
