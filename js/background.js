@@ -103,30 +103,35 @@ function startTracking(vid) {
 }
 
 function trackLoop(ctrack, classifier, recentEvents, count) {
-  var currentParams = ctrack.getCurrentParameters();
-  var emotions = classifier.meanPredict(currentParams);
+  var score = ctrack.getScore();
+  if (score > 0.5){
+    var currentParams = ctrack.getCurrentParameters();
+    var emotions = classifier.meanPredict(currentParams);
 
-  if (emotions) {
-    var max = 0.5;
-    var emotion = "bored";
+    if (emotions) {
+      var max = 0.5;
+      var emotion = "bored";
 
-    for (i in emotions){
-      var emo = emotions[i];
+      for (i in emotions){
+        var emo = emotions[i];
 
-      if (emo.value > max){
-        max = emo.value;
-        var emotion = emo.emotion;
+        if (emo.value > max){
+          max = emo.value;
+          var emotion = emo.emotion;
+        }
+
+        if ((emo.value > 0.9) && (!recentEvents[emo.emotion])){
+          recentEvents[emo.emotion] = true;
+          saveEvent(emo.emotion);
+        } else if (emo.value < 0.3) {
+          recentEvents[emo.emotion] = false;
+        }
       }
 
-      if ((emo.value > 0.9) && (!recentEvents[emo.emotion])){
-        recentEvents[emo.emotion] = true;
-        saveEvent(emo.emotion);
-      } else if (emo.value < 0.3) {
-        recentEvents[emo.emotion] = false;
-      }
+      chrome.browserAction.setIcon({path:"img/" + emotion + ".png"});
     }
-
-    chrome.browserAction.setIcon({path:"img/" + emotion + ".png"});
+  } else {
+    chrome.browserAction.setIcon({path:"img/bad.png"});
   }
 
   if ((count >= 60) && emotions){
