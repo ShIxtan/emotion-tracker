@@ -121,7 +121,7 @@ function trackLoop(ctrack, classifier, recentEvents, count) {
       if ((emo.value > 0.9) && (!recentEvents[emo.emotion])){
         recentEvents[emo.emotion] = true;
         saveEvent(emo.emotion);
-      } else if (emo.value < 0.5) {
+      } else if (emo.value < 0.3) {
         recentEvents[emo.emotion] = false;
       }
     }
