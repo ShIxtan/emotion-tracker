@@ -99,24 +99,30 @@ function startTracking(vid) {
   classifier.init(emotionModel);
 
   ctrack.start(vid);
-  trackLoop(ctrack, classifier)
+  trackLoop(ctrack, classifier, {})
 }
 
-function trackLoop(ctrack, classifier) {
+function trackLoop(ctrack, classifier, recentEvents) {
   setTimeout(function(){
-    trackLoop(ctrack, classifier);
+    trackLoop(ctrack, classifier, recentEvents);
   }, 500);
   var currentParams = ctrack.getCurrentParameters();
   var emotions = classifier.meanPredict(currentParams);
 
   if (emotions) {
-    var max = 0.8;
+    var max = 0.5;
     emotion = "bored";
     for (i in emotions){
       if (emotions[i].value > max){
         max = emotions[i].value;
         var emotion = emotions[i].emotion
+      }
+
+      if ((emotions[i].value > 0.8) && (!recentEvents[emotions[i].emotion])){
+        recentEvents[emotions[i].emotion] = true;
         saveEvent(emotion);
+      } else if (emotions[i].value < 0.5) {
+        recentEvents[emotions[i].emotion] = false;
       }
     }
 
