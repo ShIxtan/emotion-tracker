@@ -104,12 +104,12 @@ function startTracking(vid) {
 
 function trackLoop(ctrack, classifier, recentEvents, count) {
   var score = ctrack.getScore();
-  if (score > 0.5){
+  if (score > 0.6){
     var currentParams = ctrack.getCurrentParameters();
     var emotions = classifier.meanPredict(currentParams);
 
     if (emotions) {
-      var max = 0.5;
+      var max = 0.8;
       var emotion = "bored";
 
       for (i in emotions){

@@ -8,23 +8,23 @@ From the popup, or the options page, you can click "data" to see a graph of the 
 
 ### Issues and to-dos
 
-[ ] - The model needs more training, it regularly thinks my mustache is my upper lip, and my eyebrows are my eyes.
-[ ] - Find a better data storage solution, or only store "events." indexedDB is cool, but too slow when trying to get 3600 records an hour. 
-[ ] - Do something with events, there are lots of options here:
-  [ ] - bookmark sites that make you smile
-  [ ] - pop an alert for different states, maybe you haven't smiled in a while, or maybe your anger is higher than average on this tab.
-  [ ] - Auto-add emotion content to Facebook posts?
-[ ] - Lots of options for analytics, but need a better data solution first. What sites make you sad? What times of day are you happy? What emotions make you visit Facebook?
-[ ] - Add recognition for more expressions. 
-  [ ] - Blink/eyes closed
-  [ ] - Wink (might be interesting for triggering commands?)
-  [ ] - Yawn/Sleepy
-  [ ] - Hand obscuring face? (might be useful if you're trying to stop biting nails...)
-  [ ] - Chewing (know what sites make you hungry?)
-  
+- [ ] The model needs more training, it regularly thinks my mustache is my upper lip, and my eyebrows are my eyes.
+- [ ] Find a better data storage solution, or only store "events." indexedDB is cool, but too slow when trying to get 3600 records an hour.
+- [ ] Do something with events, there are lots of options here:
+  - [ ] bookmark sites that make you smile
+  - [ ] pop an alert for different states, maybe you haven't smiled in a while, or maybe your anger is higher than average on this tab.
+  - [ ] Auto-add emotion content to Facebook posts?
+- [ ] Lots of options for analytics, but need a better data solution first. What sites make you sad? What times of day are you happy? What emotions make you visit Facebook?
+- [ ] Add recognition for more expressions.
+  - [ ] Blink/eyes closed
+  - [ ] Wink (might be interesting for triggering commands?)
+  - [ ] Yawn/Sleepy
+  - [ ] Hand obscuring face? (might be useful if you're trying to stop biting nails...)
+  - [ ] Chewing (know what sites make you hungry?)
 
-  
-  
+
+
+
 
 
 
