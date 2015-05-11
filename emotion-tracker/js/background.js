@@ -44,7 +44,7 @@ function getVid(successCallback){
   // check for camerasupport
   if (navigator.webkitGetUserMedia) {
     // set up stream
-    var vid = document.getElementById('videoel');
+    var vid = window.vid = document.getElementById('videoel');
     var videoSelector = {video : true};
 
     navigator.webkitGetUserMedia(videoSelector, function( stream ) {
@@ -61,8 +61,6 @@ function getVid(successCallback){
   } else {
     alert("This extension depends on getUserMedia, which your browser does not seem to support. :(");
   }
-
-  return vid;
 }
 
 function bookmarkEvent(data){
@@ -180,5 +178,5 @@ function trackLoop(ctrack, classifier, recentEvents, count) {
 document.addEventListener('DOMContentLoaded', function() {
   window.bookmarkIDs = setupBookmarks();
   window.db = openDB();
-  window.vid = getVid(startTracking);
+  getVid(startTracking);
 });

@@ -129,7 +129,8 @@ function setupChart(background){
 document.addEventListener('DOMContentLoaded', function() {
   var background = chrome.extension.getBackgroundPage();
   navigator.webkitGetUserMedia({video : true}, function() {
-    background.getVid(background.startTracking)}, function() {});
+    background.getVid(background.startTracking)
+  }, function() {});
   var vid = getVid(background.vid.src);
   var updateData = setupChart(background);
   startDrawing(vid, background, updateData);
