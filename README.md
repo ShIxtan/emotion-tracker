@@ -21,6 +21,7 @@ From the popup, or the options page, you can click "data" to see a graph of the 
   - [ ] Yawn/Sleepy
   - [ ] Hand obscuring face? (might be useful if you're trying to stop biting nails...)
   - [ ] Chewing (know what sites make you hungry?)
+  - [ ] Looking away from screen/ being AFK.
 
 
 

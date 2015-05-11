@@ -73,7 +73,6 @@ function saveEvent(emotion){
       'timestamp': Date.now(),
       'event': emotion
     };
-
     db.events.put(data);
   });
 }
@@ -123,7 +122,7 @@ function trackLoop(ctrack, classifier, recentEvents, count) {
         if ((emo.value > 0.9) && (!recentEvents[emo.emotion])){
           recentEvents[emo.emotion] = true;
           saveEvent(emo.emotion);
-        } else if (emo.value < 0.3) {
+        } else if (emo.value < 0.2) {
           recentEvents[emo.emotion] = false;
         }
       }
