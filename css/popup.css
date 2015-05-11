@@ -1,17 +1,15 @@
 #overlay {
-  position: absolute;
-  top: 40px;
-  left: 10px;
+  position: relative;
   -webkit-transform : scaleX(-1);
+  margin-top: -100%;
 
   width : 600px;
   height : 450px;
 }
 
 #videoel {
-  position: absolute;
-  top: 40px;
-  left: 10px;
+  position: relative;
+  top: 20px;
   -webkit-transform : scaleX(-1);
 
   width : 600px;
@@ -19,6 +17,9 @@
 }
 
 #status {
-  width : 600px;
-  height : 500px;
+  float: left;
+}
+
+#data {
+  float: left;
 }

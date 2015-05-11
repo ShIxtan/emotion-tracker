@@ -80,9 +80,9 @@ function timeDifference(current, previous) {
 
 document.addEventListener('DOMContentLoaded', function() {
   var oneMinAgo = Date.now() - (1000 * 60);
-  var tenMinAgo = Date.now() - (1000 * 60 * 60);
+  var oneHourAgo = Date.now() - (1000 * 60 * 60);
   var db = chrome.extension.getBackgroundPage().db;
-  db.events.where('timestamp').above(tenMinAgo).toArray().then(function(events){
+  db.events.where('timestamp').above(oneHourAgo).toArray().then(function(events){
     showEvents(events);
   })
   db.emotions.where('timestamp').above(oneMinAgo).toArray().then(function(data){
