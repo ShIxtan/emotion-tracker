@@ -16,10 +16,10 @@
   height : 450px;
 }
 
-#status {
-  float: left;
+#data, #emotion_chart {
+  float: left
 }
 
 #data {
-  float: left;
+  margin-top: 30px;
 }

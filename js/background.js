@@ -103,7 +103,7 @@ function startTracking(vid) {
 
 function trackLoop(ctrack, classifier, recentEvents, count) {
   var score = ctrack.getScore();
-  if (score > 0.6){
+  if (score > 0.7){
     var currentParams = ctrack.getCurrentParameters();
     var emotions = classifier.meanPredict(currentParams);
 
@@ -127,10 +127,10 @@ function trackLoop(ctrack, classifier, recentEvents, count) {
         }
       }
 
-      chrome.browserAction.setIcon({path:"img/" + emotion + ".png"});
+      chrome.browserAction.setIcon({path:"../img/" + emotion + ".png"});
     }
   } else {
-    chrome.browserAction.setIcon({path:"img/bad.png"});
+    chrome.browserAction.setIcon({path:"../img/bad.png"});
   }
 
   if ((count >= 60) && emotions){

@@ -3,6 +3,7 @@
   <head>
     <title>Emotion Tracker Popup</title>
     <script src="../js/lib/jquery-1.11.3.min.js"></script>
+    <script src="../js/lib/d3.min.js"></script>
     <script src="../js/popup.js"></script>
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/popup.css" media="screen" title="no title" charset="utf-8">
@@ -14,7 +15,7 @@
         <canvas id="overlay" width="400" height="300"></canvas>
         <div class="container">
           <a href="#" class="btn btn-info" id="data">Data</a>
-          <div id="status"></div>
+          <div id='emotion_chart'></div>
         </div>
     </div>
   </body>
