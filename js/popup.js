@@ -17,7 +17,7 @@ function startDrawing(vid, background) {
 
   loop = setInterval(function(){
     drawLoop(overlayCC, background);
-  }, 500);
+  }, 1000/60);
 
   return loop;
 }

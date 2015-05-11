@@ -99,36 +99,45 @@ function startTracking(vid) {
   classifier.init(emotionModel);
 
   ctrack.start(vid);
-  trackLoop(ctrack, classifier, {})
+  trackLoop(ctrack, classifier, {}, 60)
 }
 
-function trackLoop(ctrack, classifier, recentEvents) {
-  setTimeout(function(){
-    trackLoop(ctrack, classifier, recentEvents);
-  }, 500);
+function trackLoop(ctrack, classifier, recentEvents, count) {
   var currentParams = ctrack.getCurrentParameters();
   var emotions = classifier.meanPredict(currentParams);
 
   if (emotions) {
     var max = 0.5;
-    emotion = "bored";
+    var emotion = "bored";
+
     for (i in emotions){
-      if (emotions[i].value > max){
-        max = emotions[i].value;
-        var emotion = emotions[i].emotion
+      var emo = emotions[i];
+
+      if (emo.value > max){
+        max = emo.value;
+        var emotion = emo.emotion;
       }
 
-      if ((emotions[i].value > 0.8) && (!recentEvents[emotions[i].emotion])){
-        recentEvents[emotions[i].emotion] = true;
-        saveEvent(emotion);
-      } else if (emotions[i].value < 0.5) {
-        recentEvents[emotions[i].emotion] = false;
+      if ((emo.value > 0.9) && (!recentEvents[emo.emotion])){
+        recentEvents[emo.emotion] = true;
+        saveEvent(emo.emotion);
+      } else if (emo.value < 0.5) {
+        recentEvents[emo.emotion] = false;
       }
     }
 
     chrome.browserAction.setIcon({path:"img/" + emotion + ".png"});
-    saveEmotions(emotions);
   }
+
+  if ((count >= 60) && emotions){
+    saveEmotions(emotions);
+    count = 0;
+  } else {
+    count++;
+  }
+  setTimeout(function(){
+    trackLoop(ctrack, classifier, recentEvents, count);
+  }, 1000/60);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
