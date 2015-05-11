@@ -65,6 +65,14 @@ function getVid(successCallback){
   return vid;
 }
 
+function bookmarkEvent(data){
+  if (bookmarkIDs[data.event]){
+    chrome.bookmarks.create({'parentId': bookmarkIDs[data.event],
+                               'title': data.tabTitle,
+                               'url': data.tabUrl});
+  }
+}
+
 function saveEvent(emotion){
   getCurrentTab(function(tab){
     var data = {
@@ -73,8 +81,33 @@ function saveEvent(emotion){
       'timestamp': Date.now(),
       'event': emotion
     };
+    bookmarkEvent(data);
     db.events.put(data);
   });
+}
+
+function setupBookmarks(){
+  var bookmarkIDs = {};
+  chrome.storage.sync.get('bookmarkIDs', function(ids){
+    if (ids.length) {
+      bookmarkIDs = ids;
+    } else {
+      chrome.bookmarks.create({'title': 'Emotion bookmarks'}, function(baseFolder) {
+         bookmarkIDs['base'] = baseFolder.id;
+         var emotions = ['fear', 'surprised', 'angry', 'happy', 'sad', 'disgusted'];
+         emotions.forEach(function(emotion){
+            chrome.bookmarks.create({'parentId': baseFolder.id, 'title': emotion}, function(emoFolder) {
+              bookmarkIDs[emotion] = emoFolder.id;
+              if (bookmarkIDs.length >= 7){
+                chrome.storage.sync.set({'bookmarkIDs': bookmarkIDs});
+              }
+            });
+         });
+      });
+    }
+  });
+
+  return bookmarkIDs;
 }
 
 function saveEmotions(emotions){
@@ -145,6 +178,7 @@ function trackLoop(ctrack, classifier, recentEvents, count) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  window.bookmarkIDs = setupBookmarks();
   window.db = openDB();
   window.vid = getVid(startTracking);
 });
