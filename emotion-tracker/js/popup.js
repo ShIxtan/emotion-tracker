@@ -1,8 +1,6 @@
 function getVid(src){
   var vid = document.getElementById('videoel');
 
-  navigator.webkitGetUserMedia({video : true}, function() {}, function() {});
-
   vid.src = src;
   return vid;
 }
@@ -129,7 +127,9 @@ function setupChart(background){
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  var background = chrome.extension.getBackgroundPage()
+  var background = chrome.extension.getBackgroundPage();
+  navigator.webkitGetUserMedia({video : true}, function() {
+    background.getVid(background.startTracking)}, function() {});
   var vid = getVid(background.vid.src);
   var updateData = setupChart(background);
   startDrawing(vid, background, updateData);
